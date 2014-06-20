@@ -1,0 +1,6 @@
+(import "triangle" trunk :message "Import version 1.6")
+(tag trunk "triangle-1.6" :message "Version 1.6")
+(import "triangle1" trunk)
+(tag trunk "triangle-1.6-1")
+(import "triangle2" trunk)
+(tag trunk "triangle-1.6-2")

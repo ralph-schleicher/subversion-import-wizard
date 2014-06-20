@@ -1,0 +1,4 @@
+@set PACKAGE Subversion Import Wizard
+@set VERSION 1.0
+@set ADDRESS ralph@@mueller-schleicher.de
+@set TARNAME subversion-import-wizard

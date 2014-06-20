@@ -1,0 +1,597 @@
+\input texinfo.tex
+
+@c %**start of header
+@setfilename subversion-import-wizard.info
+@settitle Subversion Import Wizard User Manual
+@documentencoding UTF-8
+
+@set EDITION 1 (draft)
+@set UPDATED 2013-03-14
+
+@include package.texi
+
+@syncodeindex vr fn
+@syncodeindex tp fn
+@syncodeindex ky cp
+@syncodeindex pg cp
+
+@ifinfo
+@paragraphindent 0
+@end ifinfo
+
+@iftex
+@finalout
+@paragraphindent 1
+@afourpaper
+@end iftex
+
+@setchapternewpage odd
+@setcontentsaftertitlepage
+
+@macro SubWiz {}
+Subversion Import Wizard
+@end macro
+
+@macro subwiz {}
+subversion-import-wizard
+@end macro
+
+@iftex
+@macro amp {}
+@tex
+@&@relax
+@end tex
+@end macro
+@end iftex
+@ifnottex
+@macro amp {}
+&
+@end macro
+@end ifnottex
+
+@macro figure {name, width, label}
+@quotation
+@float Figure,\name\
+@image{extern/\name\,\width\,}
+@caption{\label\}
+@end float
+@end quotation
+@end macro
+@c %**end of header
+
+@copying
+This is edition @value{EDITION}, last updated @value{UPDATED}, of the
+@cite{@SubWiz{} User Manual}, for @SubWiz{} version @value{VERSION}.
+
+@quotation
+Copyright @copyright{} 2012, 2013 Ralph Schleicher
+
+Permission is granted to make and distribute verbatim copies of this
+manual provided the copyright notice and this permission notice are
+preserved on all copies.
+@end quotation
+
+Please report any errors in this manual to @email{@value{ADDRESS}}.
+@end copying
+
+@dircategory Utilities
+@direntry
+* Subversion Import Wizard: (subversion-import-wizard).
+@end direntry
+
+@ifnothtml
+@titlepage
+@title @SubWiz{} User Manual
+@subtitle Edition @value{EDITION}, @value{UPDATED}
+
+@author Ralph Schleicher
+
+@page
+@vskip 0pt plus 1filll
+@insertcopying
+@end titlepage
+
+@c Table of contents.
+@contents
+@end ifnothtml
+
+@ifnottex
+@node Top, Introduction, (dir), (dir)
+@top @SubWiz{} User Manual
+
+@insertcopying
+
+@ifhtml
+The @cite{@SubWiz{} User Manual} is also available as a single
+@uref{subversion-import-wizard.pdf,PDF} file.
+@end ifhtml
+@end ifnottex
+
+@menu
+* Introduction::
+* Command File::
+* Invoking subversion-import-wizard::
+* Concept Index::
+* Command Index::
+@end menu
+
+
+@node Introduction, Command File, Top, Top
+@chapter Introduction
+
+The utility program @command{@subwiz{}}, helps the user to import a
+project history from a file system into a Subversion repository.  To
+facilitate this, the @command{@subwiz{}} program takes one or more
+@dfn{command files} as input and evaluates the commands specified in
+them.
+
+A command file is coded up by the user and its syntax is described in
+@ref{Command File}.
+
+The resulting Subversion repository is always created as a local
+repository.  When finished, you can move this repository to your
+Subversion server for general availability.
+
+@menu
+* An Illustrative Example::
+@end menu
+
+
+@node An Illustrative Example,  , Introduction, Introduction
+@section An Illustrative Example
+
+Before we explain the gory details, let's have a look at a simple
+example.  Suppose you are working on the Foo project since some time and
+you now notice that it is time to manage your project files with
+Subversion.  You have already released two versions which you have saved
+in separate directories in the file system and you have another
+directory containing the current status of the project.
+
+You can of course use Subversion's import feature to copy the current
+status of the project from the file system into the repository but that
+means that you loose the history of the project.  The alternative is to
+import the project files of the oldest available version into the
+repository and then commit successive versions by hand.  This preserves
+the history of the project but the procedure is booring and error prone.
+
+And now is the time to use the @SubWiz{} utility.  Therefore, you fire
+up your favorite text editor and create a file with the following
+contents.
+
+@lisp
+@group
+;; Import history of the Foo project.
+
+(import "foo-20120401" trunk)
+(tag trunk "foo-1.0" :message "Version 1.0")
+
+(import "foo-20120401-new" trunk :message "Fix unit conversion bug")
+(tag trunk "foo-1.1" :message "Version 1.1")
+
+(import "foo" trunk :message "Import current status")
+@end group
+@end lisp
+
+@noindent
+A quick word on the syntax of this file.  Comments start with a
+semi-colon character and last until the end of the line.  @SubWiz{}
+commands are written between a pair of parenthesis.  The first word of
+a command is the command name and the remaining words are the command
+arguments.  If this syntax remind you of a
+@uref{http://en.wikipedia.org/wiki/Lisp_(programming_language), Lisp}
+program, then you are right.  It actually is a Lisp program.  To be
+true, a @SubWiz{} command file is read@footnote{The full truth is that
+commands are read in the @code{subversion-import-wizard-user} package
+which defines the @SubWiz{} symbols but also shadows Common Lisp symbols
+like @code{import}.} and evaluated by a
+@uref{http://en.wikipedia.org/wiki/Common_Lisp, Common Lisp} system.
+The reason to provide a fully fledged Common Lisp system as the shell
+for @SubWiz{} commands is to make simple tasks easy and complex tasks
+possible.
+
+Let's go back and have a look what these commands are about.  The first
+@code{import} command copies the contents of the directory
+@file{foo-20120401} from the file system into the @emph{trunk} directory
+of the repository.  When the @emph{trunk} directory is empty, this is
+equal to the Subversion command
+
+@example
+svn import foo-20120401 ^/trunk
+@end example
+
+@noindent
+After that the @code{tag} command creates a label for this revision.
+Again, this is equal to the Subversion command
+
+@example
+svn copy ^/trunk ^/tags/foo-1.0
+@end example
+
+The second @code{import} command copies the contents of the directory
+@file{foo-20120401-new} from the file system into the @emph{trunk}
+directory of the repository.  Although it has the same form as the first
+@code{import} command, what happens behind the scene is quite different.
+Files and directories are automatically added or deleted so that, after
+the @code{import} command finished, the @emph{trunk} directory resembles
+the @file{foo-20120401-new} directory.  Again, the second @code{tag}
+command creates a label for this revision.
+
+Finally, the third @code{import} command copies the contents of the
+current working directory @file{foo} from the file system into the
+@emph{trunk} directory of the repository.
+
+To actually execute these commands you have to save the command file as,
+for example, @file{foo-import.txt} and invoke the @command{@subwiz{}}
+program on it.
+
+@example
+@subwiz{} foo-import.txt
+@end example
+
+
+@node Command File, Invoking subversion-import-wizard, Introduction, Top
+@chapter Command File
+
+@cindex command file
+A command file is a text file coded up by the user.
+
+
+@heading Comments
+
+Comments start with a semi-colon character.  The semi-colon and all
+characters up to and including the next end-of-line character or the end
+of the file are ignored.
+
+See also
+@uref{http://www.lispworks.com/documentation/HyperSpec/Body/02_dd.htm,
+Semicolon}.
+
+
+@heading Numbers
+
+@table @asis
+@item @code{13}, @code{-13}
+Integral numbers.
+
+@item @code{1/3}, @code{-1/3}
+Rational numbers.
+
+@item @code{1.2}, @code{-1.2}, @code{1E+3}, @code{1E-3}
+Floating-point numbers.
+@end table
+
+See also
+@uref{http://www.lispworks.com/documentation/HyperSpec/Body/02_ca.htm,
+Numbers as Tokens}.
+
+
+@heading Strings
+
+Strings are delimited by double-quote characters.  The backslash
+character @key{\} is the escape character.
+
+@table @asis
+@item @code{""}
+The empty string.
+
+@item @code{"foo"}
+A non-empty string.
+
+@item @code{"Say \"No\"!"}
+A string containing double-quote characters.
+
+@item @code{"foo\\bar"}
+A string containing a backslash character.
+@end table
+
+See also
+@uref{http://www.lispworks.com/documentation/HyperSpec/Body/02_de.htm,
+Double-Quote}.
+
+
+@heading Symbols
+
+@table @asis
+@item @code{foo}, @code{bar}
+Simple symbols.
+
+@item @code{foo-bar}, @code{foo*}, @code{%bar}
+Symbol containing a minus sign.
+
+@item @code{:foo}
+A keyword.
+@end table
+
+
+@menu
+* Symbol Reference::
+@end menu
+
+
+@node Symbol Reference,  , Command File, Command File
+@section Symbol Reference
+
+The predefined @SubWiz{} variables and functions are described in this
+section.  For simple tasks, that's all you need to know.  The rest, and
+that's a lot, is documented in the
+@uref{http://www.lispworks.com/documentation/HyperSpec/Front/index.htm,
+Common Lisp HyperSpec}.
+
+
+@deffn Function ~ arg @dots{}
+Concatenate parts of a file system path.
+
+The @code{~} function takes any number of arguments (which have to be
+strings) and constructs a file system path of it.
+
+The return value is a string.  If no arguments are given, the return
+value is the empty string.
+
+The result of the @code{~} function depends on your operating system's
+file system path separator.
+
+On Windows, you get
+
+@lisp
+(~ "foo" "bar" "baz")
+ @result{} "foo\bar\baz"
+@end lisp
+
+@noindent
+whereas on Unix, you get
+
+@lisp
+(~ "foo" "bar" "baz")
+ @result{} "foo/bar/baz"
+@end lisp
+@end deffn
+
+
+@deffn Function ^ arg @dots{}
+Concatenate parts of a repository path.
+
+The @code{^} function takes any number of arguments (which have to be
+strings) and constructs a repository path of it.
+
+The return value is a string.  If no arguments are given, the return
+value is the empty string.
+
+Contrary to the @code{~} function, the result of the @code{^} function
+does not depend on your operating system because it refers to a path in
+a Subversion repository.
+
+@lisp
+(^ "foo" "bar" "baz")
+ @result{} "foo/bar/baz"
+@end lisp
+@end deffn
+
+
+@defvr {Special Variable} trunk
+The repository path of the trunk directory.
+Default value is @code{"trunk"}.
+
+For example,
+
+@lisp
+(^ trunk "foo")
+ @result{} "trunk/foo"
+@end lisp
+@end defvr
+
+
+@defvr {Special Variable} branches
+The repository path of the branches directory.
+Default value is @code{"branches"}.
+
+For example,
+
+@lisp
+(^ branches "bar")
+ @result{} "branches/bar"
+@end lisp
+@end defvr
+
+
+@defvr {Special Variable} tags
+The repository path of the tags directory.
+Default value is @code{"tags"}.
+
+For example,
+
+@lisp
+(^ tags "baz")
+ @result{} "tags/baz"
+@end lisp
+@end defvr
+
+
+@deffn {Subversion Command} mkdir dir @t{@amp{}key} message
+Create a directory in the repository, if it does not exist.
+Intermediate directories are made as needed.
+
+@itemize @bullet
+@item
+First argument @var{dir} is the repository path of the directory.
+
+@item
+Keyword argument @var{message} is the commit message.  Default is
+@code{"Create directory"}.
+@end itemize
+
+For example,
+
+@lisp
+(mkdir "branches/users/john" :message "Create user directory for John Doe")
+@end lisp
+@end deffn
+
+
+@deffn {Subversion Command} copy from to @t{@amp{}key} message
+Duplicate a directory in the repository, remembering history.
+
+@itemize @bullet
+@item
+First argument @var{from} is the repository path of the source
+directory.
+
+@item
+Second argument @var{to} is the repository path of the destination
+directory.
+
+@item
+Keyword argument @var{message} is the commit message.  Default is
+@code{"Create copy"}.
+@end itemize
+
+For example,
+
+@lisp
+(copy "trunk" "branches/foo" :message "Create foo branch")
+@end lisp
+@end deffn
+
+
+@deffn {Subversion Command} import from to @t{@amp{}key} ignore message
+Copy an unversioned directory from the file system into the repository.
+
+@itemize @bullet
+@item
+First argument @var{from} is the file system path of the source
+directory.
+
+@item
+Second argument @var{to} is the repository path of the destination
+directory.
+
+@item
+If keyword argument @var{ignore} is true, omit ignored files and
+directories.  Default is to import all files and directories.
+
+@item
+Keyword argument @var{message} is the commit message.
+@end itemize
+
+The source directory has to exist.  If the destination directory does
+not exist, it is created.  If the destination directory is not empty,
+files and directories are added, deleted, or updated as needed to
+match the contents of the source directory.
+
+For example,
+
+@lisp
+(import "foo" "trunk" :ignore t :message "Initial import")
+@end lisp
+@end deffn
+
+
+@node Invoking subversion-import-wizard, Concept Index, Command File, Top
+@chapter Invoking @command{@subwiz{}}
+
+@cindex invoking @command{@subwiz{}}
+@cindex @command{@subwiz{}} invocation
+The @command{@subwiz{}} command reads commands from input files and
+evaluates them.  Its arguments are as follows:
+
+@example
+@subwiz{} @r{[}@var{option}@dots{}@r{]} @var{filename}@dots{}
+@end example
+
+@cindex error messages
+@cindex warning messages
+@cindex diagnostic messages
+The @command{@subwiz{}} program writes diagnostic messages to standard
+error.  If non-recoverable errors occur while reading an input file,
+@command{@subwiz{}} terminates with an exit status indicating failure.
+Diagnostic messages have the form
+
+@example
+@var{filename}:@var{linenumber}: @var{message}
+@end example
+
+@noindent
+where @var{filename} and @var{linenumber} point to the location of the
+error.
+
+@cindex exit status
+An exit status of 0 means success and 1 means trouble.
+
+@menu
+* subversion-import-wizard Options::
+@end menu
+
+
+@node subversion-import-wizard Options,  , Invoking subversion-import-wizard, Invoking subversion-import-wizard
+@section @command{@subwiz{}} Options
+
+@cindex @command{@subwiz{}} options
+@cindex options, @command{@subwiz{}}
+Below is a summary of all of the options that @command{@subwiz{}}
+accepts.  Some options have two equivalent names, one of which is a
+single letter preceded by a single hyphen @samp{-}, and the other of
+which is a long name preceded by two hyphens @samp{--}.  Multiple single
+letter options (unless they take an argument) can be combined into a
+single command line word.  Long named options can be abbreviated to any
+unique prefix of their name.
+
+@table @code
+@item --repository=LOCATION
+Location of the Subversion repository.  Default is to create a local
+repository.
+
+@item --working-copy=DIRNAME
+Directory name of the working copy.  Default is to create a temporary
+directory.
+
+@item -n
+@itemx --dry-run
+Do not execute any command.  This option is useful for testing and
+debugging.
+
+@item -w
+@itemx --window-system
+@cindex window system
+Interact with the user via a graphical user interface.
+
+@SubWiz{} attempts to guess if it has been invoked from the command line
+or from a window system.  You can use the @option{-w} option to force
+the later.
+
+@item --help
+@cindex program help text
+@cindex help text, program
+Print a short help text and exit successfully.
+
+@item --version
+@cindex program version number
+@cindex version number, program
+Print the version number and exit successfully.
+@end table
+
+
+@node Concept Index, Command Index, Invoking subversion-import-wizard, Top
+@unnumbered Concept Index
+
+@printindex cp
+
+
+@node Command Index,  , Concept Index, Top
+@unnumbered Command Index
+
+@printindex fn
+
+
+@bye
+
+
+@c LocalWords: texinfo pt filll dir
+@c LocalWords: subversion-import-wizard
+
+@c local variables:
+@c mode: outline-minor
+@c outline-regexp: "@\\(chapt\\|unnum\\|appen\\|section\\|subsection\\)"
+@c time-stamp-time-zone: "UTC"
+@c time-stamp-format: "%:y-%02m-%02d"
+@c time-stamp-start: "^@set UPDATED[    ]+"
+@c time-stamp-end: "$"
+@c end:
