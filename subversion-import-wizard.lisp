@@ -1,6 +1,6 @@
 ;; subversion-import-wizard.lisp --- yet another Lisp hack.
 
-;; Copyright (C) 2012 Ralph Schleicher
+;; Copyright (C) 2012, 2013 Ralph Schleicher
 
 ;; Redistribution and use in source and binary forms, with or without
 ;; modification, are permitted provided that the following conditions
@@ -47,10 +47,15 @@
 (defconst +PROGRAM+ "subversion-import-wizard"
   "Official name of the program.")
 
-(defconst +VERSION+ "1.0"
+(defconst +VERSION+ "1.0.1"
   "Version number of the program.")
 
-(defconst +ADDRESS+ (format nil "~A@~A" "ralph" "mueller-schleicher.de")
+(defconst +ADDRESS+ (let ((sys (asdf:find-system :subversion-import-wizard)))
+		      (or (ignore-errors
+			    (asdf:system-maintainer sys))
+			  (ignore-errors
+			    (asdf:system-author sys))
+			  (format nil "<~A@~A>" "rs" "ralph-schleicher.de")))
   "Mail address or URL for reporting bugs.")
 
 (defparameter *repository* nil
@@ -76,7 +81,7 @@
   (format stream "~
 ~A ~A
 
-Copyright (C) 2012 Ralph Schleicher
+Copyright (C) 2012, 2013 Ralph Schleicher
 
 This program is free software and distributed under the modified
 BSD License.  There is NO warranty; not even for MERCHANTABILITY
@@ -109,7 +114,7 @@ Options:
   --version         Display version number information.
   --help            Display this help text.
 
-Report bugs to <~A>~%"
+Report bugs to ~A~%"
 	  (program-invocation-short-name) +ADDRESS+))
 
 (export 'main)
