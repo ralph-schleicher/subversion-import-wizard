@@ -1,18 +1,16 @@
-This is subversion-import-wizard.info, produced by makeinfo version
-4.13 from subversion-import-wizard.texi.
+This is subversion-import-wizard.info, produced by makeinfo version 5.1
+from subversion-import-wizard.texi.
 
-This is edition 1 (draft), last updated 2013-03-14, of the `Subversion
-Import Wizard User Manual', for Subversion Import Wizard version 1.0.
+This is edition 1 (draft), last updated 2013-03-14, of the ‘Subversion
+Import Wizard User Manual’, for Subversion Import Wizard version 1.0.
 
-     Copyright (C) 2012, 2013 Ralph Schleicher
+     Copyright © 2012, 2013 Ralph Schleicher
 
      Permission is granted to make and distribute verbatim copies of
      this manual provided the copyright notice and this permission
      notice are preserved on all copies.
 
-Please report any errors in this manual to
-<ralph@mueller-schleicher.de>.
-
+Please report any errors in this manual to <rs@ralph-schleicher.de>.
 INFO-DIR-SECTION Utilities
 START-INFO-DIR-ENTRY
 * Subversion Import Wizard: (subversion-import-wizard).
@@ -24,17 +22,16 @@ File: subversion-import-wizard.info,  Node: Top,  Next: Introduction,  Prev: (di
 Subversion Import Wizard User Manual
 ************************************
 
-This is edition 1 (draft), last updated 2013-03-14, of the `Subversion
-Import Wizard User Manual', for Subversion Import Wizard version 1.0.
+This is edition 1 (draft), last updated 2013-03-14, of the ‘Subversion
+Import Wizard User Manual’, for Subversion Import Wizard version 1.0.
 
-     Copyright (C) 2012, 2013 Ralph Schleicher
+     Copyright © 2012, 2013 Ralph Schleicher
 
      Permission is granted to make and distribute verbatim copies of
      this manual provided the copyright notice and this permission
      notice are preserved on all copies.
 
-Please report any errors in this manual to
-<ralph@mueller-schleicher.de>.
+Please report any errors in this manual to <rs@ralph-schleicher.de>.
 
 * Menu:
 
@@ -50,11 +47,11 @@ File: subversion-import-wizard.info,  Node: Introduction,  Next: Command File,  
 1 Introduction
 **************
 
-The utility program `subversion-import-wizard', helps the user to
-import a project history from a file system into a Subversion
-repository.  To facilitate this, the `subversion-import-wizard' program
-takes one or more "command files" as input and evaluates the commands
-specified in them.
+The utility program ‘subversion-import-wizard’, helps the user to import
+a project history from a file system into a Subversion repository.  To
+facilitate this, the ‘subversion-import-wizard’ program takes one or
+more "command files" as input and evaluates the commands specified in
+them.
 
 A command file is coded up by the user and its syntax is described in
 *note Command File::.
@@ -73,14 +70,14 @@ File: subversion-import-wizard.info,  Node: An Illustrative Example,  Prev: Intr
 1.1 An Illustrative Example
 ===========================
 
-Before we explain the gory details, let's have a look at a simple
+Before we explain the gory details, let’s have a look at a simple
 example.  Suppose you are working on the Foo project since some time and
 you now notice that it is time to manage your project files with
 Subversion.  You have already released two versions which you have saved
 in separate directories in the file system and you have another
 directory containing the current status of the project.
 
-You can of course use Subversion's import feature to copy the current
+You can of course use Subversion’s import feature to copy the current
 status of the project from the file system into the repository but that
 means that you loose the history of the project.  The alternative is to
 import the project files of the oldest available version into the
@@ -106,52 +103,51 @@ semi-colon character and last until the end of the line.  Subversion
 Import Wizard commands are written between a pair of parenthesis.  The
 first word of a command is the command name and the remaining words are
 the command arguments.  If this syntax remind you of a Lisp
-(http://en.wikipedia.org/wiki/Lisp_(programming_language)) program,
-then you are right.  It actually is a Lisp program.  To be true, a
-Subversion Import Wizard command file is read(1) and evaluated by a
-Common Lisp (http://en.wikipedia.org/wiki/Common_Lisp) system.  The
-reason to provide a fully fledged Common Lisp system as the shell for
-Subversion Import Wizard commands is to make simple tasks easy and
-complex tasks possible.
+(http://en.wikipedia.org/wiki/Lisp_(programming_language)) program, then
+you are right.  It actually is a Lisp program.  To be true, a Subversion
+Import Wizard command file is read(1) and evaluated by a Common Lisp
+(http://en.wikipedia.org/wiki/Common_Lisp) system.  The reason to
+provide a fully fledged Common Lisp system as the shell for Subversion
+Import Wizard commands is to make simple tasks easy and complex tasks
+possible.
 
-Let's go back and have a look what these commands are about.  The first
-`import' command copies the contents of the directory `foo-20120401'
-from the file system into the _trunk_ directory of the repository.
-When the _trunk_ directory is empty, this is equal to the Subversion
-command
+Let’s go back and have a look what these commands are about.  The first
+‘import’ command copies the contents of the directory ‘foo-20120401’
+from the file system into the _trunk_ directory of the repository.  When
+the _trunk_ directory is empty, this is equal to the Subversion command
 
      svn import foo-20120401 ^/trunk
 
-After that the `tag' command creates a label for this revision.  Again,
+After that the ‘tag’ command creates a label for this revision.  Again,
 this is equal to the Subversion command
 
      svn copy ^/trunk ^/tags/foo-1.0
 
-The second `import' command copies the contents of the directory
-`foo-20120401-new' from the file system into the _trunk_ directory of
-the repository.  Although it has the same form as the first `import'
+The second ‘import’ command copies the contents of the directory
+‘foo-20120401-new’ from the file system into the _trunk_ directory of
+the repository.  Although it has the same form as the first ‘import’
 command, what happens behind the scene is quite different.  Files and
 directories are automatically added or deleted so that, after the
-`import' command finished, the _trunk_ directory resembles the
-`foo-20120401-new' directory.  Again, the second `tag' command creates
-a label for this revision.
+‘import’ command finished, the _trunk_ directory resembles the
+‘foo-20120401-new’ directory.  Again, the second ‘tag’ command creates a
+label for this revision.
 
-Finally, the third `import' command copies the contents of the current
-working directory `foo' from the file system into the _trunk_ directory
+Finally, the third ‘import’ command copies the contents of the current
+working directory ‘foo’ from the file system into the _trunk_ directory
 of the repository.
 
 To actually execute these commands you have to save the command file as,
-for example, `foo-import.txt' and invoke the `subversion-import-wizard'
+for example, ‘foo-import.txt’ and invoke the ‘subversion-import-wizard’
 program on it.
 
      subversion-import-wizard foo-import.txt
 
----------- Footnotes ----------
+   ---------- Footnotes ----------
 
-(1) The full truth is that commands are read in the
-`subversion-import-wizard-user' package which defines the Subversion
+   (1) The full truth is that commands are read in the
+‘subversion-import-wizard-user’ package which defines the Subversion
 Import Wizard symbols but also shadows Common Lisp symbols like
-`import'.
+‘import’.
 
 
 File: subversion-import-wizard.info,  Node: Command File,  Next: Invoking subversion-import-wizard,  Prev: Introduction,  Up: Top
@@ -174,13 +170,13 @@ See also Semicolon
 Numbers
 =======
 
-`13', `-13'
+‘13’, ‘-13’
      Integral numbers.
 
-`1/3', `-1/3'
+‘1/3’, ‘-1/3’
      Rational numbers.
 
-`1.2', `-1.2', `1E+3', `1E-3'
+‘1.2’, ‘-1.2’, ‘1E+3’, ‘1E-3’
      Floating-point numbers.
 
 See also Numbers as Tokens
@@ -192,16 +188,16 @@ Strings
 Strings are delimited by double-quote characters.  The backslash
 character <\> is the escape character.
 
-`""'
+‘""’
      The empty string.
 
-`"foo"'
+‘"foo"’
      A non-empty string.
 
-`"Say \"No\"!"'
+‘"Say \"No\"!"’
      A string containing double-quote characters.
 
-`"foo\\bar"'
+‘"foo\\bar"’
      A string containing a backslash character.
 
 See also Double-Quote
@@ -210,13 +206,13 @@ See also Double-Quote
 Symbols
 =======
 
-`foo', `bar'
+‘foo’, ‘bar’
      Simple symbols.
 
-`foo-bar', `foo*', `%bar'
+‘foo-bar’, ‘foo*’, ‘%bar’
      Symbol containing a minus sign.
 
-`:foo'
+‘:foo’
      A keyword.
 
 * Menu:
@@ -230,84 +226,84 @@ File: subversion-import-wizard.info,  Node: Symbol Reference,  Prev: Command Fil
 ====================
 
 The predefined Subversion Import Wizard variables and functions are
-described in this section.  For simple tasks, that's all you need to
-know.  The rest, and that's a lot, is documented in the Common Lisp
+described in this section.  For simple tasks, that’s all you need to
+know.  The rest, and that’s a lot, is documented in the Common Lisp
 HyperSpec
 (http://www.lispworks.com/documentation/HyperSpec/Front/index.htm).
 
- -- Function: ~ arg ...
+ -- Function: ~ arg …
      Concatenate parts of a file system path.
 
-     The `~' function takes any number of arguments (which have to be
+     The ‘~’ function takes any number of arguments (which have to be
      strings) and constructs a file system path of it.
 
      The return value is a string.  If no arguments are given, the
      return value is the empty string.
 
-     The result of the `~' function depends on your operating system's
+     The result of the ‘~’ function depends on your operating system’s
      file system path separator.
 
      On Windows, you get
 
           (~ "foo" "bar" "baz")
-           => "foo\bar\baz"
+           ⇒ "foo\bar\baz"
 
      whereas on Unix, you get
 
           (~ "foo" "bar" "baz")
-           => "foo/bar/baz"
+           ⇒ "foo/bar/baz"
 
- -- Function: ^ arg ...
+ -- Function: ^ arg …
      Concatenate parts of a repository path.
 
-     The `^' function takes any number of arguments (which have to be
+     The ‘^’ function takes any number of arguments (which have to be
      strings) and constructs a repository path of it.
 
      The return value is a string.  If no arguments are given, the
      return value is the empty string.
 
-     Contrary to the `~' function, the result of the `^' function does
+     Contrary to the ‘~’ function, the result of the ‘^’ function does
      not depend on your operating system because it refers to a path in
      a Subversion repository.
 
           (^ "foo" "bar" "baz")
-           => "foo/bar/baz"
+           ⇒ "foo/bar/baz"
 
  -- Special Variable: trunk
      The repository path of the trunk directory.  Default value is
-     `"trunk"'.
+     ‘"trunk"’.
 
      For example,
 
           (^ trunk "foo")
-           => "trunk/foo"
+           ⇒ "trunk/foo"
 
  -- Special Variable: branches
      The repository path of the branches directory.  Default value is
-     `"branches"'.
+     ‘"branches"’.
 
      For example,
 
           (^ branches "bar")
-           => "branches/bar"
+           ⇒ "branches/bar"
 
  -- Special Variable: tags
      The repository path of the tags directory.  Default value is
-     `"tags"'.
+     ‘"tags"’.
 
      For example,
 
           (^ tags "baz")
-           => "tags/baz"
+           ⇒ "tags/baz"
 
  -- Subversion Command: mkdir dir &key message
      Create a directory in the repository, if it does not exist.
      Intermediate directories are made as needed.
 
-        * First argument DIR is the repository path of the directory.
+        • First argument DIR is the repository path of the directory.
 
-        * Keyword argument MESSAGE is the commit message.  Default is
-          `"Create directory"'.
+        • Keyword argument MESSAGE is the commit message.  Default is
+          ‘"Create directory"’.
 
      For example,
 
@@ -316,14 +312,14 @@ HyperSpec
  -- Subversion Command: copy from to &key message
      Duplicate a directory in the repository, remembering history.
 
-        * First argument FROM is the repository path of the source
+        • First argument FROM is the repository path of the source
           directory.
 
-        * Second argument TO is the repository path of the destination
+        • Second argument TO is the repository path of the destination
           directory.
 
-        * Keyword argument MESSAGE is the commit message.  Default is
-          `"Create copy"'.
+        • Keyword argument MESSAGE is the commit message.  Default is
+          ‘"Create copy"’.
 
      For example,
 
@@ -333,20 +329,20 @@ HyperSpec
      Copy an unversioned directory from the file system into the
      repository.
 
-        * First argument FROM is the file system path of the source
+        • First argument FROM is the file system path of the source
           directory.
 
-        * Second argument TO is the repository path of the destination
+        • Second argument TO is the repository path of the destination
           directory.
 
-        * If keyword argument IGNORE is true, omit ignored files and
+        • If keyword argument IGNORE is true, omit ignored files and
           directories.  Default is to import all files and directories.
 
-        * Keyword argument MESSAGE is the commit message.
+        • Keyword argument MESSAGE is the commit message.
 
      The source directory has to exist.  If the destination directory
-     does not exist, it is created.  If the destination directory is
-     not empty, files and directories are added, deleted, or updated as
+     does not exist, it is created.  If the destination directory is not
+     empty, files and directories are added, deleted, or updated as
      needed to match the contents of the source directory.
 
      For example,
@@ -356,17 +352,17 @@ HyperSpec
 
 File: subversion-import-wizard.info,  Node: Invoking subversion-import-wizard,  Next: Concept Index,  Prev: Command File,  Up: Top
 
-3 Invoking `subversion-import-wizard'
+3 Invoking ‘subversion-import-wizard’
 *************************************
 
-The `subversion-import-wizard' command reads commands from input files
+The ‘subversion-import-wizard’ command reads commands from input files
 and evaluates them.  Its arguments are as follows:
 
-     subversion-import-wizard [OPTION...] FILENAME...
+     subversion-import-wizard [OPTION…] FILENAME…
 
-The `subversion-import-wizard' program writes diagnostic messages to
+The ‘subversion-import-wizard’ program writes diagnostic messages to
 standard error.  If non-recoverable errors occur while reading an input
-file, `subversion-import-wizard' terminates with an exit status
+file, ‘subversion-import-wizard’ terminates with an exit status
 indicating failure.  Diagnostic messages have the form
 
      FILENAME:LINENUMBER: MESSAGE
@@ -382,42 +378,42 @@ An exit status of 0 means success and 1 means trouble.
 
 File: subversion-import-wizard.info,  Node: subversion-import-wizard Options,  Prev: Invoking subversion-import-wizard,  Up: Invoking subversion-import-wizard
 
-3.1 `subversion-import-wizard' Options
+3.1 ‘subversion-import-wizard’ Options
 ======================================
 
-Below is a summary of all of the options that `subversion-import-wizard'
+Below is a summary of all of the options that ‘subversion-import-wizard’
 accepts.  Some options have two equivalent names, one of which is a
-single letter preceded by a single hyphen `-', and the other of which
-is a long name preceded by two hyphens `--'.  Multiple single letter
+single letter preceded by a single hyphen ‘-’, and the other of which is
+a long name preceded by two hyphens ‘--’.  Multiple single letter
 options (unless they take an argument) can be combined into a single
 command line word.  Long named options can be abbreviated to any unique
 prefix of their name.
 
-`--repository=LOCATION'
+‘--repository=LOCATION’
      Location of the Subversion repository.  Default is to create a
      local repository.
 
-`--working-copy=DIRNAME'
+‘--working-copy=DIRNAME’
      Directory name of the working copy.  Default is to create a
      temporary directory.
 
-`-n'
-`--dry-run'
+‘-n’
+‘--dry-run’
      Do not execute any command.  This option is useful for testing and
      debugging.
 
-`-w'
-`--window-system'
+‘-w’
+‘--window-system’
      Interact with the user via a graphical user interface.
 
      Subversion Import Wizard attempts to guess if it has been invoked
      from the command line or from a window system.  You can use the
-     `-w' option to force the later.
+     ‘-w’ option to force the later.
 
-`--help'
+‘--help’
      Print a short help text and exit successfully.
 
-`--version'
+‘--version’
      Print the version number and exit successfully.
 
 
@@ -438,17 +434,17 @@ Concept Index
                                                                (line 20)
 * help text, program:                    subversion-import-wizard Options.
                                                                (line 36)
-* invoking subversion-import-wizard:     Invoking subversion-import-wizard.
+* invoking ‘subversion-import-wizard’:   Invoking subversion-import-wizard.
                                                                (line  6)
-* options, subversion-import-wizard:     subversion-import-wizard Options.
+* options, ‘subversion-import-wizard’:   subversion-import-wizard Options.
                                                                (line  6)
 * program help text:                     subversion-import-wizard Options.
                                                                (line 36)
 * program version number:                subversion-import-wizard Options.
                                                                (line 39)
-* subversion-import-wizard invocation:   Invoking subversion-import-wizard.
+* ‘subversion-import-wizard’ invocation: Invoking subversion-import-wizard.
                                                                (line  6)
-* subversion-import-wizard options:      subversion-import-wizard Options.
+* ‘subversion-import-wizard’ options:    subversion-import-wizard Options.
                                                                (line  6)
 * version number, program:               subversion-import-wizard Options.
                                                                (line 39)
@@ -466,28 +462,28 @@ Command Index
  [index ]
 * Menu:
 
-* ^:                                     Symbol Reference.    (line  35)
-* branches:                              Symbol Reference.    (line  60)
-* copy:                                  Symbol Reference.    (line  91)
-* import:                                Symbol Reference.    (line 107)
-* mkdir:                                 Symbol Reference.    (line  78)
-* tags:                                  Symbol Reference.    (line  69)
-* trunk:                                 Symbol Reference.    (line  51)
-* ~:                                     Symbol Reference.    (line  13)
+* ^:                                     Symbol Reference.    (line  34)
+* ~:                                     Symbol Reference.    (line  12)
+* branches:                              Symbol Reference.    (line  59)
+* copy:                                  Symbol Reference.    (line  90)
+* import:                                Symbol Reference.    (line 106)
+* mkdir:                                 Symbol Reference.    (line  77)
+* tags:                                  Symbol Reference.    (line  68)
+* trunk:                                 Symbol Reference.    (line  50)
 
 
 
 Tag Table:
-Node: Top677
-Node: Introduction1411
-Node: An Illustrative Example2141
-Ref: An Illustrative Example-Footnote-15759
-Node: Command File5955
-Node: Symbol Reference7266
-Node: Invoking subversion-import-wizard11200
-Node: subversion-import-wizard Options12055
-Node: Concept Index13469
-Node: Command Index15658
+Node: Top673
+Node: Introduction1405
+Node: An Illustrative Example2143
+Ref: An Illustrative Example-Footnote-15823
+Node: Command File6030
+Node: Symbol Reference7413
+Node: Invoking subversion-import-wizard11417
+Node: subversion-import-wizard Options12288
+Node: Concept Index13754
+Node: Command Index15959
 
 End Tag Table
 
