@@ -32,6 +32,8 @@
 
 ## Code:
 
+AM_MAKEINFOHTMLFLAGS = --css-ref=texinfo.css
+
 EXTRA_DIST = subversion-import-wizard.pdf
 
 info_TEXINFOS = subversion-import-wizard.texi
