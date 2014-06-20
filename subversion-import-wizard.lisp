@@ -114,7 +114,7 @@ Options:
   --version         Display version number information.
   --help            Display this help text.
 
-Report bugs to ~A~%"
+Report bugs to ~A.~%"
 	  (program-invocation-short-name) +ADDRESS+))
 
 (export 'main)
