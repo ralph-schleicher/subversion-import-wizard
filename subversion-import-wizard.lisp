@@ -122,6 +122,12 @@ Report bugs to ~A.~%"
   "Program entry point."
   (declare (ignore arguments))
   (standalone-program)
+  ;; Make sure that Subversion doesn't operate in locale dependent ways.
+  (setf (environment-variable "LC_ALL") "C"
+	;; GNU gettext gives preference to LANGUAGE over LC_ALL for the
+	;; purpose of message handling.  But we don't want translations
+	;; for messages.
+	(environment-variable "LANGUAGE") nil)
   (let (file-names)
     ;; Initial window system support is determined heuristically.
     #+windows
